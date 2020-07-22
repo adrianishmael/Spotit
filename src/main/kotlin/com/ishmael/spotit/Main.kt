@@ -2,17 +2,21 @@ package com.ishmael.spotit
 
 import com.adamratzman.spotify.models.PagingObject
 import com.adamratzman.spotify.models.SimplePlaylist
-import com.adamratzman.spotify.models.Track
 import com.adamratzman.spotify.spotifyAppApi
 import java.io.File
 import kotlin.system.exitProcess
 
 private val api = spotifyAppApi(System.getenv("CLIENT_ID"), System.getenv("CLIENT_SECRET")).build()
+private val username = getUsername()
 
 fun main() {
-    val username = getUsername()
-    val userPlaylistIds = getUserPlaylistsIds(username)
-    println(userPlaylistIds.toString())
+
+    val userPlaylistIds = getUserPlaylistsIds()
+
+    println("Users playlist")
+    for(p in userPlaylistIds) {
+        println(api.playlists.getPlaylist(p).complete()!!.name + " id: " + p)
+    }
 
     exitProcess(0)
 }
@@ -37,7 +41,7 @@ fun getUsername(): String {
     }
 }
 
-fun getUserPlaylists(username: String): PagingObject<SimplePlaylist> {
+fun getUserPlaylists(): PagingObject<SimplePlaylist> {
     try {
         return api.playlists.getUserPlaylists(username).complete()
     }
@@ -51,11 +55,13 @@ fun getUserPlaylists(username: String): PagingObject<SimplePlaylist> {
     }
 }
 
-fun getUserPlaylistsIds(username: String): ArrayList<String> {
-    val playlists = getUserPlaylists(username)
+fun getUserPlaylistsIds(): ArrayList<String> {
+    val playlists = getUserPlaylists()
     val userPlaylistIds = ArrayList<String>()
+
     for(p in playlists) {
         userPlaylistIds.add(p!!.id)
     }
+
     return userPlaylistIds
 }
