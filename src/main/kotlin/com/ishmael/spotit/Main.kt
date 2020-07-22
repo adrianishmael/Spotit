@@ -11,7 +11,7 @@ private val api = spotifyAppApi(System.getenv("CLIENT_ID"), System.getenv("CLIEN
 
 fun main() {
     val username = getUsername()
-    val userPlaylistIds = getUserPlaylistIds(getUserPlaylists(username))
+    val userPlaylistIds = getUserPlaylistsIds(username)
     println(userPlaylistIds.toString())
 
     exitProcess(0)
@@ -51,7 +51,8 @@ fun getUserPlaylists(username: String): PagingObject<SimplePlaylist> {
     }
 }
 
-fun getUserPlaylistIds(playlists: PagingObject<SimplePlaylist>): ArrayList<String> {
+fun getUserPlaylistsIds(username: String): ArrayList<String> {
+    val playlists = getUserPlaylists(username)
     val userPlaylistIds = ArrayList<String>()
     for(p in playlists) {
         userPlaylistIds.add(p!!.id)
