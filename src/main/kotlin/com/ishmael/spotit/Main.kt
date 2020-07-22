@@ -1,5 +1,8 @@
 package com.ishmael.spotit
 
+import com.adamratzman.spotify.models.PagingObject
+import com.adamratzman.spotify.models.SimplePlaylist
+import com.adamratzman.spotify.models.Track
 import com.adamratzman.spotify.spotifyAppApi
 import java.io.File
 import kotlin.system.exitProcess
@@ -8,9 +11,8 @@ private val api = spotifyAppApi(System.getenv("CLIENT_ID"), System.getenv("CLIEN
 
 fun main() {
     val username = getUsername()
-    val playlistSearch = getUserPlaylists(username)
-    println("User's playlists: ")
-    println(playlistSearch)
+    val userPlaylistIds = getUserPlaylistIds(getUserPlaylists(username))
+    println(userPlaylistIds.toString())
 
     exitProcess(0)
 }
@@ -27,6 +29,7 @@ fun getUsername(): String {
 
         println("Save username for later use? (y/n)")
         when(readLine()) {
+            // TODO: if resources package is not present FileNotFoundException is thrown
             "y" -> File(pathname).writeText(username)
         }
 
@@ -34,9 +37,9 @@ fun getUsername(): String {
     }
 }
 
-fun getUserPlaylists(username: String): List<String> {
+fun getUserPlaylists(username: String): PagingObject<SimplePlaylist> {
     try {
-        return api.playlists.getUserPlaylists(username).complete().map { it!!.name }
+        return api.playlists.getUserPlaylists(username).complete()
     }
     catch(e: Exception) {
         if(File("src/main/resources/data.txt").exists())
@@ -46,4 +49,12 @@ fun getUserPlaylists(username: String): List<String> {
         println("Double check your username is correct on next run")
         exitProcess(1)
     }
+}
+
+fun getUserPlaylistIds(playlists: PagingObject<SimplePlaylist>): ArrayList<String> {
+    val userPlaylistIds = ArrayList<String>()
+    for(p in playlists) {
+        userPlaylistIds.add(p!!.id)
+    }
+    return userPlaylistIds
 }
