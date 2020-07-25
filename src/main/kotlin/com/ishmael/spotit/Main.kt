@@ -6,11 +6,14 @@ import com.adamratzman.spotify.spotifyAppApi
 import java.io.File
 import kotlin.system.exitProcess
 
+// Instance of Spotify API lib
 private val api = spotifyAppApi(System.getenv("CLIENT_ID"), System.getenv("CLIENT_SECRET")).build()
-private val username = getUsername()
+private val username = getUsername()    // Declared here to scope to all functions
 
 fun main() {
+    // Current test code
 
+    // gets all users public playlist, prints names and ids
     val userPlaylistIds = getUserPlaylistsIds()
 
     println("Users playlist")
@@ -21,6 +24,11 @@ fun main() {
     exitProcess(0)
 }
 
+/**
+ *  Gets user's Spotify username from saved data or user input if it is already stored
+ *
+ *  @return String
+ */
 fun getUsername(): String {
     val pathname = "data/username.dat"
 
@@ -42,6 +50,11 @@ fun getUsername(): String {
     }
 }
 
+/**
+ *  Requests all of the data from user's public playlists
+ *
+ *  @return PagingObject of playlist objects and fields
+ */
 fun getUserPlaylists(): PagingObject<SimplePlaylist> {
     try {
         return api.playlists.getUserPlaylists(username).complete()
@@ -57,6 +70,12 @@ fun getUserPlaylists(): PagingObject<SimplePlaylist> {
     }
 }
 
+
+/**
+ *  Gets the ids of each of the users public playlist
+ *
+ *  @return ArrayList containing each playlist id
+ */
 fun getUserPlaylistsIds(): ArrayList<String> {
     val playlists = getUserPlaylists()
     val userPlaylistIds = ArrayList<String>()
