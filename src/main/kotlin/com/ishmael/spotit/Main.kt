@@ -8,13 +8,13 @@ import kotlin.system.exitProcess
 
 // Instance of Spotify API lib
 private val api = spotifyAppApi(System.getenv("CLIENT_ID"), System.getenv("CLIENT_SECRET")).build()
-private val username = getUsername()    // Declared here to scope to all functions
 
 fun main() {
     // Current test code
+    val username = getUsername()    // Declared here to scope to all functions
 
     // gets all users public playlist, prints names and ids
-    val userPlaylistIds = getUserPlaylistsIds()
+    val userPlaylistIds = getUserPlaylistsIds(username)
 
     println("Users playlist")
     for(p in userPlaylistIds) {
@@ -55,7 +55,7 @@ fun getUsername(): String {
  *
  *  @return PagingObject of playlist objects and fields
  */
-fun getUserPlaylists(): PagingObject<SimplePlaylist> {
+fun getUserPlaylists(username : String): PagingObject<SimplePlaylist> {
     try {
         return api.playlists.getUserPlaylists(username).complete()
     }
@@ -76,8 +76,8 @@ fun getUserPlaylists(): PagingObject<SimplePlaylist> {
  *
  *  @return ArrayList containing each playlist id
  */
-fun getUserPlaylistsIds(): ArrayList<String> {
-    val playlists = getUserPlaylists()
+fun getUserPlaylistsIds(username: String): ArrayList<String> {
+    val playlists = getUserPlaylists(username)
     val userPlaylistIds = ArrayList<String>()
 
     for(p in playlists) {
